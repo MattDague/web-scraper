@@ -25,20 +25,24 @@ app.get("/all", function (req, res) {
 });
 
 app.get("/scraper", function (req, res) {
-    axios.get("https://www.espn.com/esports/").then(function (response) {
+    axios.get("https://www.indiewire.com/c/film/").then(function (response) {
         var $ = cheerio.load(response.data);
 
-        $(".contentItem__content").each(function (i, element) {
-            var title = $(element).children("a").children("div").children("div").children("h1").text()
-            var link = $(element).children("a").attr("href");
+        $(".article-row").each(function (i, element) {
+            var title = $(element).children(".post-right").children("div").children("header").children("h2").children("a").text()
+            var summary = $(element).children(".post-right").children("div").children("div").children("p").text()
+            var link = $(element).children(".post-left").children("a").attr("href");
+            var image = $(element).children(".post-left").children("a").children("img").attr("src");
 
-            db.scrapeData.insert({
-                title: title,
-                link: link
-            }, function (err, data) {
-                if (err) throw new err;
-            });
+            // db.scrapeData.insert({
+            //     title: title,
+            //     link: link
+            // }, function (err, data) {
+            //     if (err) throw new err;
+            // });
             console.log(title);
+            console.log(summary);
+            console.log(image)
             console.log(link)
         });
     });
