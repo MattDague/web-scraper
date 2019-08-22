@@ -1,0 +1,15 @@
+{{#each articles}}
+
+<div class="card my-2">
+  <div class="card-header"> 
+    <a href="{{link}}"><h2>{{title}}</h2></a>
+    <button type="button" class="text-right btn btn-success articleSave" data-_id="{{_id}}">Save Article</button>
+    </div>
+
+    <div class="card-body">
+      <p>{{summary}}</p>
+
+  </div>
+</div>
+
+{{#/each}}

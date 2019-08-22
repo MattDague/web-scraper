@@ -2,16 +2,22 @@ var express = require("express");
 var mongojs = require("mongojs");
 var axios = require("axios");
 var cheerio = require("cheerio");
+var mongoose = require("mongoose");
 
 var app = express();
 
 var databaseUrl = "scraper";
 var collections = ["scrapeData"];
 
-var db = mongojs(databaseUrl, collections);
-db.on("error", function (error) {
-    console.log("database error: ", error);
-});
+mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
+
+var exphbs = require("express-handlebars");
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
+var db = require("./models")
+// var db = mongojs(databaseUrl, collections);
 
 app.get("/", function (req, res) {
     res.render("index")
@@ -29,21 +35,37 @@ app.get("/scraper", function (req, res) {
         var $ = cheerio.load(response.data);
 
         $(".article-row").each(function (i, element) {
-            var title = $(element).children(".post-right").children("div").children("header").children("h2").children("a").text()
-            var summary = $(element).children(".post-right").children("div").children("div").children("p").text()
-            var link = $(element).children(".post-left").children("a").attr("href");
-            var image = $(element).children(".post-left").children("a").children("img").attr("src");
+
+            var result = {}
+            
+            result.title = $(this).children(".post-right").children("div").children("header").children("h2").children("a").text();
+
+            result.summary = $(this).children(".post-right").children("div").children("div").children("p").text()
+           
+            result.link = $(this).children(".post-left").children("a").attr("href");
+
+            result.img = $(this).children(".post-left").children("a").children("img").attr("src");
+
+            db.Article.create(result)
+            .then(function(newArticle){
+                console.log(newArticle)
+            })
+            .catch(function(err){
+                console.log(err)
+            })
 
             // db.scrapeData.insert({
             //     title: title,
-            //     link: link
+            //     link: link,
+            //     summary: summary,
+            //     image: image
             // }, function (err, data) {
             //     if (err) throw new err;
             // });
-            console.log(title);
-            console.log(summary);
-            console.log(image)
-            console.log(link)
+            // console.log(title);
+            // console.log(summary);
+            // console.log(image)
+            // console.log(link)
         });
     });
 });
