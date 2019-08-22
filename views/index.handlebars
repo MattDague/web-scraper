@@ -1,15 +1,48 @@
 {{#each articles}}
 
+
+<!-- Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="commentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="commentModalLabel">{{title}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="commentTitle" class="col-form-label">Title:</label>
+            <br>
+            <input id='commentTitle' name='title' >
+            <br>
+            <label for="commentArea" class="col-form-label">Comment:</label>
+            
+            <textarea class="form-control" id="commentArea"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="saveComment btn btn-primary" data-dismiss="modal" data-_id="{{_id}}">Leave Comment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- display --}}
 <div class="card my-2 mx-5 container">
   <div class="card-header row bg-dark ">
     <div class="col-10 col-md-8 col-sm-8">
-      <a href="{{link}}">
+      <a href="{{link}}" target="_blank">
         <h2 class="text-light">{{title}}</h2>
       </a>
     </div>
     <div class="col-2 col-md-4 col-sm-4"><br>
       <button type="button" class="float-right btn btn-success articleSave" data-_id="{{_id}}">Save Article</button>
-      <button type="button" class="float-right mx-2 btn btn-info articleNote" data-_id="{{_id}}">Make a Note</button>
+      <button type="button" class="float-right mx-2 btn btn-info articleComment" data-_id="{{_id}}" data-toggle="modal" data-target="#commentModal">Make a Comment</button>
     </div>
   </div>
 
