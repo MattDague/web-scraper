@@ -1,15 +1,28 @@
 {{#each articles}}
 
-<div class="card my-2">
-  <div class="card-header"> 
-    <a href="{{link}}"><h2>{{title}}</h2></a>
-    <button type="button" class="text-right btn btn-success articleSave" data-_id="{{_id}}">Save Article</button>
+<div class="card my-2 mx-5 container">
+  <div class="card-header row bg-dark ">
+    <div class="col-10 col-md-8 col-sm-8">
+      <a href="{{link}}">
+        <h2 class="text-light">{{title}}</h2>
+      </a>
+    </div>
+    <div class="col-2 col-md-4 col-sm-4"><br>
+      <button type="button" class="float-right btn btn-success articleSave" data-_id="{{_id}}">Save Article</button>
+      <button type="button" class="float-right mx-2 btn btn-info articleNote" data-_id="{{_id}}">Make a Note</button>
+    </div>
+  </div>
+
+  <div class="card-body row">
+    <div class="col-4 col-md-5 col-sm-9">
+      <img src="{{img}}">
+    </div>
+    <div class="col-8 col-md-7 col-sm-3">
+      <p>{{summary}}</p>
     </div>
 
-    <div class="card-body">
-      <p>{{summary}}</p>
 
   </div>
 </div>
 
-{{#/each}}
+{{/each}}
