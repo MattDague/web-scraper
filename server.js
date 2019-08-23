@@ -6,9 +6,6 @@ var mongoose = require("mongoose");
 var db = require("./models")
 var app = express();
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 var PORT = process.env.PORT || 3000;
 
@@ -24,8 +21,6 @@ app.use(express.json());
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
-
-
 
 
 app.get("/", function (req, res) {
@@ -215,6 +210,9 @@ app.get("/comments/:id", function (req, res) {
             res.json(err)
         });
 });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 app.listen(PORT, function() {
     console.log("App running on port 3000!")
