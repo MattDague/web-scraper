@@ -6,7 +6,12 @@ var mongoose = require("mongoose");
 
 var app = express();
 
-mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+mongoose.connect(MONGODB_URI);
+
+
+// mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
 mongoose.set('useFindAndModify', false);
 
 var exphbs = require("express-handlebars");
