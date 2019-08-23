@@ -3,7 +3,7 @@ var mongojs = require("mongojs");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var mongoose = require("mongoose");
-
+var db = require("./models")
 var app = express();
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
@@ -25,7 +25,7 @@ app.use(express.json());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-var db = require("./models")
+
 
 
 app.get("/", function (req, res) {
