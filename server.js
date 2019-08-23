@@ -22,7 +22,16 @@ app.set("view engine", "handlebars");
 var db = require("./models")
 
 app.get("/", function (req, res) {
-    res.render("index")
+    db.Article.find({}).then(function (dbArticle) {
+        var hbsObject = {
+            articles: dbArticle
+        };
+        res.render("index", hbsObject)
+    })
+        .catch(function (err) {
+            res.json(err)
+        })
+
 })
 
 app.get("/all", function (req, res) {
@@ -31,7 +40,6 @@ app.get("/all", function (req, res) {
         res.json(data);
     });
 });
-
 
 //scrapes website for articles
 app.get("/scraper", function (req, res) {
@@ -57,7 +65,7 @@ app.get("/scraper", function (req, res) {
 //get route for rendering all articles in db
 app.get("/articles", function (req, res) {
     db.Article.find({}).then(function (dbArticle) {
-        var hbsObject = { 
+        var hbsObject = {
             articles: dbArticle
         };
         res.render("index", hbsObject)
@@ -69,66 +77,64 @@ app.get("/articles", function (req, res) {
 });
 
 // update articles to mark as saved
-app.post("/saved/:id", function(req, res) {
+app.post("/saved/:id", function (req, res) {
     db.Article.updateOne(
-      {
-        _id: mongojs.ObjectId(req.params.id)
-      },
-      {
-        $set: {
-          saved: true
-        }
-      },
-      function(error, edited) {
- 
-        if (error) {
-          console.log(error);
-          res.send(error);
-        }
-        else {
-          console.log(edited);
-          res.send(edited);
-         
-        }
-        
-      }
-    );
-  });
+        {
+            _id: mongojs.ObjectId(req.params.id)
+        },
+        {
+            $set: {
+                saved: true
+            }
+        },
+        function (error, edited) {
 
-  //updates articles to unsave them
-  app.post("/unsaved/:id", function(req, res) {
-    db.Article.updateOne(
-      {
-        _id: mongojs.ObjectId(req.params.id)
-      },
-      {
-        $set: {
-          saved: false
+            if (error) {
+                console.log(error);
+                res.send(error);
+            }
+            else {
+                console.log(edited);
+                res.send(edited);
+
+            }
+
         }
-      },
-      function(error, edited) {
- 
-        if (error) {
-          console.log(error);
-          res.send(error);
-        }
-        else {
-          console.log(edited);
-          res.send(edited);
-          
-        }
-       
-      }
     );
-  });
+});
+
+//updates articles to unsave them
+app.post("/unsaved/:id", function (req, res) {
+    db.Article.updateOne(
+        {
+            _id: mongojs.ObjectId(req.params.id)
+        },
+        {
+            $set: {
+                saved: false
+            }
+        },
+        function (error, edited) {
+
+            if (error) {
+                console.log(error);
+                res.send(error);
+            }
+            else {
+                console.log(edited);
+                res.send(edited);
+            }
+        }
+    );
+});
 
 
 //renders all saved articles
 app.get("/saved", function (req, res) {
-    db.Article.find({ 
+    db.Article.find({
         saved: true
     }).then(function (dbArticle) {
-        var hbsObject = { 
+        var hbsObject = {
             articles: dbArticle
         };
         res.render("saved", hbsObject)
@@ -140,53 +146,69 @@ app.get("/saved", function (req, res) {
 
 
 //get route for articles/comments
-app.get("/articles/:id", function(req, res) {
-
+app.get("/articles/:id", function (req, res) {
     db.Article.findOne(
-      {
-        _id: req.params.id
-      })
-      .populate("comment")
-      .then(function(dbArticle){
-        res.json(dbArticle);
-      })
-      .catch(function(err){
-        res.json(err)
-      })
-    });
+        {
+            _id: req.params.id
+        })
+        .populate("comment")
+        .then(function (dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function (err) {
+            res.json(err)
+        })
+});
 
 // updates for comments
-app.post("/articles/:id", function(req, res) {
-
+app.post("/articles/:id", function (req, res) {
     db.Comment.create(req.body)
-    .then(function(dbComment){
-        return db.Article.findOneAndUpdate({
-        _id: req.params.id
-        },  {
-        comment: dbComment._id
-        }, {new: true});
-    })
-    .then(function(dbArticle){
-        res.json(dbArticle)
-        
-    })
-    .catch(function(err){
-        res.json(err)
+        .then(function (dbComment) {
+            return db.Article.findOneAndUpdate({
+                _id: req.params.id
+            }, {
+                    comment: dbComment._id
+                }, { new: true });
+        })
+        .then(function (dbArticle) {
+            res.json(dbArticle)
+
+        })
+        .catch(function (err) {
+            res.json(err)
+        });
+});
+
+//clear database
+app.get("/clear", function (req, res) {
+    db.Article.remove({}, function (error, response) {
+        if (error) {
+            console.log(error);
+            res.send(error);
+        }
+        else {
+            console.log(response);
+            res.send(response);
+        }
     });
 });
 
-app.get("/clear", function(req, res) {
-    db.Article.remove({}, function(error, response) {
-            if (error) {
-              console.log(error);
-              res.send(error);
-            }
-            else {
-              console.log(response);
-              res.send(response);
-            }
-          });
+//removed comments
+app.get("/comments/:id", function (req, res) {
+    db.Comment.remove({
+                _id: req.params.id
+            } 
+                
+        )
+        .then(function (dbArticle) {
+            res.json(dbArticle)
+
+        })
+        .catch(function (err) {
+            res.json(err)
         });
+});
+
 
 app.listen(3000, function () {
     console.log("App running on port 3000!");

@@ -1,7 +1,3 @@
-// $.getJSON("/articles", function (data) {
-//     console.log(data)
-// });
-
 //opens and adds content to modals
 $(document).on("click", ".articleComment", function () {
     $("#comments").empty()
@@ -20,7 +16,7 @@ $(document).on("click", ".articleComment", function () {
             $("#comments").append("<button class='btn btn-success' data-_id='" + data._id + "' id='saveComment'>Save Comment</button>");
 
             if (data.comment) {
-                $("#otherComments").append("<hr>Another user commented: <strong>" + data.comment.title + "</strong> - " + data.comment.body + "  <button class='ml-2 btn btn-danger' data-_id='" + data._id + "' id='deleteComment'>Delete</button><hr>");
+                $("#otherComments").append("<hr>Another user commented: <strong>" + data.comment.title + "</strong> - " + data.comment.body + "  <button class='ml-2 btn btn-danger' data-_id='" + data.comment._id + "' id='deleteComment'>Delete</button><hr>");
             }
         });
 });
@@ -38,6 +34,7 @@ $(document).on("click", "#saveComment", function () {
     })
         .then(function (data) {
             console.log(data);
+            location.reload()
         });
 
     $("#commentTitle").val("");
@@ -78,13 +75,15 @@ $(document).on("click", ".articleUnsave", function () {
 
 //runs new scrape
 $(document).on("click", "#scrapeButton", function () {
+    setTimeout(location.reload.bind(location), 2500);
     $.ajax({
         method: "GET",
         url: "/scraper",
     })
+    
         .then(function () {
-            console.log("done scraping");
-            location.reload()
+            
+            
         });
 });
 
@@ -108,11 +107,12 @@ $(document).on("click", "#deleteComment", function () {
     var thisId = $(this).attr("data-_id");
 
     $.ajax({
-        method: "DELETE",
-        url: "/articles/" + thisId,
+        method: "GET",
+        url: "/comments/" + thisId,
     })
         .then(function (data) {
             console.log(data);
+            location.reload()
         });
 
 });
