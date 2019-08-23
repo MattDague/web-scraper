@@ -10,6 +10,7 @@ var app = express();
 // var collections = ["scrapeData"];
 
 mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
+mongoose.set('useFindAndModify', false);
 
 var exphbs = require("express-handlebars");
 
@@ -35,40 +36,9 @@ app.get("/all", function (req, res) {
     });
 });
 
-app.get("/articles/:id", function(req, res) {
-
-    db.Article.findOne(
-      {
-        _id: req.params.id
-      })
-      .populate("comment")
-      .then(function(dbArticle){
-        res.json(dbArticle);
-      })
-      .catch(function(err){
-        res.json(err)
-      })
-    });
 
 
-app.post("/articles/:id", function(req, res) {
 
-    db.Note.create(req.body)
-    .then(function(dbNote){
-        return db.Article.findOneAndUpdate({
-        _id: req.params.id
-        }, { $set: {
-        note: dbNote._id
-        }}, {new: true});
-    })
-    .then(function(dbArticle){
-        res.json(dbArticle)
-        
-    })
-    .catch(function(err){
-        res.json(err)
-    });
-});
     
 
 app.get("/scraper", function (req, res) {
@@ -94,19 +64,6 @@ app.get("/scraper", function (req, res) {
                 .catch(function (err) {
                     console.log(err)
                 })
-
-            // db.scrapeData.insert({
-            //     title: title,
-            //     link: link,
-            //     summary: summary,
-            //     image: image
-            // }, function (err, data) {
-            //     if (err) throw new err;
-            // });
-            // console.log(title);
-            // console.log(summary);
-            // console.log(image)
-            // console.log(link)
         });
     });
 });
@@ -124,6 +81,41 @@ app.get("/articles", function (req, res) {
         })
 
 });
+
+app.get("/articles/:id", function(req, res) {
+
+    db.Article.findOne(
+      {
+        _id: req.params.id
+      })
+      .populate("comment")
+      .then(function(dbArticle){
+        res.json(dbArticle);
+      })
+      .catch(function(err){
+        res.json(err)
+      })
+    });
+
+app.post("/articles/:id", function(req, res) {
+
+    db.Comment.create(req.body)
+    .then(function(dbComment){
+        return db.Article.findOneAndUpdate({
+        _id: req.params.id
+        },  {
+        comment: dbComment._id
+        }, {new: true});
+    })
+    .then(function(dbArticle){
+        res.json(dbArticle)
+        
+    })
+    .catch(function(err){
+        res.json(err)
+    });
+});
+
 
 // router.get("/", function(req, res) {
 //     cat.all(function(data) {
