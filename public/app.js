@@ -1,60 +1,118 @@
-$.getJSON("/articles", function(data) {
-    console.log(data)
-});
+// $.getJSON("/articles", function (data) {
+//     console.log(data)
+// });
 
+//opens and adds content to modals
 $(document).on("click", ".articleComment", function () {
     $("#comments").empty()
     var thisId = $(this).attr("data-_id");
 
-    // Now make an ajax call for the Article
     $.ajax({
         method: "GET",
         url: "/articles/" + thisId
     })
-        // With that done, add the note information to the page
         .then(function (data) {
             console.log(data);
-            // The title of the article
             $("#comments").append("<h2>" + data.title + "</h2><br>");
-            // An input to enter a new title
-            $("#comments").append("<input id='titleinput' name='title' ><br><br>");
-           
-            $("#comments").append("<textarea id='bodyinput' class='form-control' name='body'></textarea><br>");
-            // A button to submit a new note, with the id of the article saved to it
+            $("#comments").append("<div id='otherComments'></div>")
+            $("#comments").append("Title: <br><input id='titleinput' name='title' ><br>");
+            $("#comments").append("Comment: <br><textarea id='bodyinput' class='form-control' name='body'></textarea><br>");
             $("#comments").append("<button class='btn btn-success' data-_id='" + data._id + "' id='saveComment'>Save Comment</button>");
 
             if (data.comment) {
-                $("#titleinput").val(data.comment.title);
-                $("#bodyinput").val(data.comment.body);
-               
+                $("#otherComments").append("<hr>Another user commented: <strong>" + data.comment.title + "</strong> - " + data.comment.body + "  <button class='ml-2 btn btn-danger' data-_id='" + data._id + "' id='deleteComment'>Delete</button><hr>");
             }
         });
 });
 
-// When you click the savenote button
+//saves comment to db
 $(document).on("click", "#saveComment", function () {
-    alert("howdy")
-    // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("data-_id");
-   
-    // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
         method: "POST",
         url: "/articles/" + thisId,
         data: {
-            // Value taken from title input
             title: $("#titleinput").val(),
-            // Value taken from note textarea
             body: $("#bodyinput").val()
         }
     })
-        // With that done
         .then(function (data) {
-            // Log the response
             console.log(data);
         });
 
-    // Also, remove the values entered in the input and textarea for note entry
     $("#commentTitle").val("");
     $("#commentArea").val("");
+});
+
+//saves article by updating save status
+$(document).on("click", ".articleSave", function () {
+  
+    var thisId = $(this).attr("data-_id");
+    $.ajax({
+        method: "POST",
+        url: "/saved/" + thisId,
+        data: {
+            saved: true
+        }
+    })
+        .then(function (data) {
+            console.log(data);
+            location.reload()
+        });
+});
+
+//removes article from saved
+$(document).on("click", ".articleUnsave", function () {
+    var thisId = $(this).attr("data-_id");
+    $.ajax({
+        method: "POST",
+        url: "/unsaved/" + thisId,
+        data: {
+            saved: false
+        }
+    })
+        .then(function () {
+            location.reload()
+        });
+});
+
+//runs new scrape
+$(document).on("click", "#scrapeButton", function () {
+    $.ajax({
+        method: "GET",
+        url: "/scraper",
+    })
+        .then(function () {
+            console.log("done scraping");
+            location.reload()
+        });
+});
+
+//clears database of articles
+$(document).on("click", "#clearButton", function () {
+    $.ajax({
+        method: "GET",
+        url: "/clear",
+    })
+        .then(function () {
+            console.log("db cleared");
+            location.reload()
+        });
+        
+});
+
+
+//removes a comment
+$(document).on("click", "#deleteComment", function () {
+
+    var thisId = $(this).attr("data-_id");
+
+    $.ajax({
+        method: "DELETE",
+        url: "/articles/" + thisId,
+    })
+        .then(function (data) {
+            console.log(data);
+        });
+
 });

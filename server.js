@@ -6,9 +6,6 @@ var mongoose = require("mongoose");
 
 var app = express();
 
-// var databaseUrl = "scraper";
-// var collections = ["scrapeData"];
-
 mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
 mongoose.set('useFindAndModify', false);
 
@@ -23,7 +20,6 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 var db = require("./models")
-// var db = mongojs(databaseUrl, collections);
 
 app.get("/", function (req, res) {
     res.render("index")
@@ -37,26 +33,16 @@ app.get("/all", function (req, res) {
 });
 
 
-
-
-    
-
+//scrapes website for articles
 app.get("/scraper", function (req, res) {
     axios.get("https://www.indiewire.com/c/film/").then(function (response) {
         var $ = cheerio.load(response.data);
-
         $(".article-row").each(function (i, element) {
-
             var result = {}
-
             result.title = $(this).children(".post-right").children("div").children("header").children("h2").children("a").text();
-
             result.summary = $(this).children(".post-right").children("div").children("div").children("p").text()
-
             result.link = $(this).children(".post-left").children("a").attr("href");
-
             result.img = $(this).children(".post-left").children("a").children("img").attr("src");
-
             db.Article.create(result)
                 .then(function (newArticle) {
                     console.log(newArticle)
@@ -68,9 +54,9 @@ app.get("/scraper", function (req, res) {
     });
 });
 
+//get route for rendering all articles in db
 app.get("/articles", function (req, res) {
     db.Article.find({}).then(function (dbArticle) {
-        // res.json(dbArticle);
         var hbsObject = { 
             articles: dbArticle
         };
@@ -82,6 +68,78 @@ app.get("/articles", function (req, res) {
 
 });
 
+// update articles to mark as saved
+app.post("/saved/:id", function(req, res) {
+    db.Article.updateOne(
+      {
+        _id: mongojs.ObjectId(req.params.id)
+      },
+      {
+        $set: {
+          saved: true
+        }
+      },
+      function(error, edited) {
+ 
+        if (error) {
+          console.log(error);
+          res.send(error);
+        }
+        else {
+          console.log(edited);
+          res.send(edited);
+         
+        }
+        
+      }
+    );
+  });
+
+  //updates articles to unsave them
+  app.post("/unsaved/:id", function(req, res) {
+    db.Article.updateOne(
+      {
+        _id: mongojs.ObjectId(req.params.id)
+      },
+      {
+        $set: {
+          saved: false
+        }
+      },
+      function(error, edited) {
+ 
+        if (error) {
+          console.log(error);
+          res.send(error);
+        }
+        else {
+          console.log(edited);
+          res.send(edited);
+          
+        }
+       
+      }
+    );
+  });
+
+
+//renders all saved articles
+app.get("/saved", function (req, res) {
+    db.Article.find({ 
+        saved: true
+    }).then(function (dbArticle) {
+        var hbsObject = { 
+            articles: dbArticle
+        };
+        res.render("saved", hbsObject)
+    })
+        .catch(function (err) {
+            res.json(err)
+        })
+});
+
+
+//get route for articles/comments
 app.get("/articles/:id", function(req, res) {
 
     db.Article.findOne(
@@ -97,6 +155,7 @@ app.get("/articles/:id", function(req, res) {
       })
     });
 
+// updates for comments
 app.post("/articles/:id", function(req, res) {
 
     db.Comment.create(req.body)
@@ -116,16 +175,18 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
-
-// router.get("/", function(req, res) {
-//     cat.all(function(data) {
-//       var hbsObject = {
-//         cats: data
-//       };
-//       console.log(hbsObject);
-//       res.render("index", hbsObject);
-//     });
-//   });
+app.get("/clear", function(req, res) {
+    db.Article.remove({}, function(error, response) {
+            if (error) {
+              console.log(error);
+              res.send(error);
+            }
+            else {
+              console.log(response);
+              res.send(response);
+            }
+          });
+        });
 
 app.listen(3000, function () {
     console.log("App running on port 3000!");

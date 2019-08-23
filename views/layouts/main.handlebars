@@ -17,10 +17,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script> 
-    {{!-- <style> .jumbotron {
-  background-image: url("https://cdn1.thr.com/sites/default/files/imagecache/landscape_928x523/2012/11/movie_theater_interior_a_l.jpg../assets/theater.jpg");
-  background-size: cover;
-}</style> --}}
 
 </head>
 
@@ -35,6 +31,7 @@
         </button>
       </div>
       <div class="modal-body">
+        
         <div id="comments"></div>
       </div>
       <div class="modal-footer">
@@ -46,13 +43,13 @@
 
 {{!-- navbar --}}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#"> <h2>Web Scraper</h2></a>
+  <a class="navbar-brand" href="/articles"> <h2>Web Scraper</h2></a>
     <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="#">Home</a>
-      <a class="nav-item nav-link" href="#">Saved Articles</a>
+      <a class="nav-item nav-link active" href="/articles">Home</a>
+      <a class="nav-item nav-link" href="/saved">Saved Articles</a>
     </div>
-  <button type="button" class="btn btn-success scrapeButton">Scrape New Articles</button>
-  <button type="button" class="btn btn-danger clearButton ml-2">Clear Articles</button>
+  <button type="button" class="btn btn-success" id="scrapeButton">Scrape New Articles</button>
+  <button type="button" class="btn btn-danger ml-2" id="clearButton">Clear Articles</button>
 </nav>
 
 <div class="jumbotron bg-info">
