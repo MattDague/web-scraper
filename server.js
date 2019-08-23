@@ -8,10 +8,10 @@ var app = express();
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 
-// mongoose.connect("mongodb://localhost/web-scraper", { useNewUrlParser: true });
+
 mongoose.set('useFindAndModify', false);
 
 var exphbs = require("express-handlebars");
