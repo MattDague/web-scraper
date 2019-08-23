@@ -5,15 +5,16 @@ var cheerio = require("cheerio");
 var mongojs = require("mongojs");
 
 router.get("/", function (req, res) {
-    db.Article.find({}).then(function (dbArticle) {
-        var hbsObject = {
-            articles: dbArticle
-        };
-        res.render("index", hbsObject)
-    })
-        .catch(function (err) {
-            res.json(err)
-        })
+    res.render("index")
+    // db.Article.find({}).then(function (dbArticle) {
+    //     var hbsObject = {
+    //         articles: dbArticle
+    //     };
+    //     res.render("index", hbsObject)
+    // })
+    //     .catch(function (err) {
+    //         res.json(err)
+    //     })
 
 })
 
